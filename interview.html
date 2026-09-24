@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interview questions — Explainable Candidate-Role Fit Engine</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+  <div class="crest">
+    <div class="mark">Fit Engine</div>
+    <nav>
+      <a href="index.html">Assess</a>
+      <a href="results.html">Result</a>
+      <a href="interview.html" class="here">Interview</a>
+    </nav>
+  </div>
+
+  <div id="content"></div>
+</div>
+
+<script src="script.js"></script>
+<script>
+const data = loadSession();
+const root = document.getElementById("content");
+
+if (!data) {
+  root.innerHTML = `
+    <h1>No role on file</h1>
+    <p class="lede">Suggestions are built from the required skills you entered — score a candidate first.</p>
+    <a class="btn" href="index.html">Go to Assess</a>`;
+} else {
+  const groups = buildQuestions(data);
+  root.innerHTML = `
+    <h1>Questions for the ${data.jobTitle || "role"} interview</h1>
+    <p class="lede">Pulled from the required skills, weighted toward whatever this candidate's profile didn't already cover.</p>
+    ${groups.map(g => `
+      <div class="section-title">${g.tag}</div>
+      ${g.questions.map(q => `<div class="qa-item"><div class="q">${q}</div></div>`).join("")}
+    `).join("")}
+    <div class="actions" style="margin-top:20px;">
+      <a class="btn ghost" href="results.html">Back to result</a>
+      <a class="btn" href="index.html">Score another candidate</a>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>
