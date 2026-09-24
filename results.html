@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Result — Explainable Candidate-Role Fit Engine</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+  <div class="crest">
+    <div class="mark">Fit Engine</div>
+    <nav>
+      <a href="index.html">Assess</a>
+      <a href="results.html" class="here">Result</a>
+      <a href="interview.html">Interview</a>
+    </nav>
+  </div>
+
+  <div id="content"></div>
+</div>
+
+<script src="script.js"></script>
+<script>
+const data = loadSession();
+const root = document.getElementById("content");
+
+if (!data) {
+  root.innerHTML = `
+    <h1>No candidate on file</h1>
+    <p class="lede">Score a candidate first — the result lives here once you do.</p>
+    <a class="btn" href="index.html">Go to Assess</a>`;
+} else {
+  const r = scoreCandidate(data);
+  const dialBg = `conic-gradient(var(--gold) ${r.finalPct * 3.6}deg, var(--line) 0deg)`;
+
+  const matchChips = r.matched.map(s => `<span class="chip match">${s}</span>`).join("") || `<span class="chip">none</span>`;
+  const gapChips = r.missing.map(s => `<span class="chip gap">${s}</span>`).join("") || `<span class="chip">none</span>`;
+
+  const feedbackBlock = r.selected
+    ? `<div class="section-title">Why this candidate advances</div>
+       <p>${data.candidateName} matched ${r.matched.length} of ${r.required.length} required skills${r.reqExp ? ` and meets the ${r.reqExp}-year experience bar` : ""}, clearing the 70% fit threshold.</p>`
+    : `<div class="section-title">Feedback for ${data.candidateName}</div>
+       <ul class="feedback">${buildFeedback(r, data).map(l => `<li>${l}</li>`).join("")}</ul>`;
+
+  root.innerHTML = `
+    <h1>${data.candidateName} vs. ${data.jobTitle || "the role"}</h1>
+    <p class="lede">Score is 75% skill coverage, 25% experience coverage — shown in full below so the number is never a black box.</p>
+
+    <div class="verdict">
+      <div class="dial" style="background:${dialBg}">
+        <div style="background:#fff;width:86px;height:86px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <div class="num">${r.finalPct}%</div>
+          <div class="pct">fit</div>
+        </div>
+      </div>
+      <div class="verdict-copy">
+        <p class="status ${r.selected ? "selected" : "declined"}">${r.selected ? "Advance to interview" : "Not selected"}</p>
+        <p>Threshold for advancing is 70% overall fit.</p>
+      </div>
+    </div>
+
+    <div class="section-title">Skill coverage — ${r.skillPct}%</div>
+    <div class="bar-row">
+      <div class="bar-track"><div class="bar-fill" style="width:${r.skillPct}%"></div></div>
+    </div>
+    <div class="chip-row" style="margin-bottom:10px;"><strong style="font-size:13px;width:100%;color:#6B7268;">Matched</strong>${matchChips}</div>
+    <div class="chip-row"><strong style="font-size:13px;width:100%;color:#6B7268;">Missing</strong>${gapChips}</div>
+
+    <div class="section-title">Experience coverage — ${r.expPct}%</div>
+    <div class="bar-row">
+      <div class="bar-track"><div class="bar-fill" style="width:${r.expPct}%"></div></div>
+    </div>
+    <p style="font-size:14px;color:#6B7268;margin-top:-6px;">${r.candExp || 0} year(s) on file against ${r.reqExp || 0} required.</p>
+
+    ${feedbackBlock}
+
+    <div class="actions" style="margin-top:30px;">
+      <a class="btn" href="interview.html">See interview questions</a>
+      <a class="btn ghost" href="index.html">Score another candidate</a>
+    </div>
+  `;
+
+  saveSession(Object.assign({}, data, { missingSkills: r.missing.join(", ") }));
+}
+</script>
+</body>
+</html>
