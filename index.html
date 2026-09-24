@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explainable Candidate-Role Fit Engine</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+  <div class="crest">
+    <div class="mark">Fit Engine</div>
+    <nav>
+      <a href="index.html" class="here">Assess</a>
+      <a href="results.html">Result</a>
+      <a href="interview.html">Interview</a>
+    </nav>
+  </div>
+
+  <h1>Explainable candidate–role fit</h1>
+  <p class="lede">Enter the role's requirements and one candidate's profile. The engine scores the match, explains exactly why, and — for a declined candidate — writes the feedback and interview follow-ups themselves.</p>
+
+  <form id="fitForm">
+    <div class="section-title">Role</div>
+    <div class="field">
+      <label for="jobTitle">Job title</label>
+      <input type="text" id="jobTitle" placeholder="e.g. Backend Engineer" required>
+    </div>
+    <div class="field">
+      <label for="requiredSkills">Required skills</label>
+      <input type="text" id="requiredSkills" placeholder="e.g. Python, SQL, AWS, Docker" required>
+      <div class="hint">Comma-separated. This is the checklist the candidate is measured against.</div>
+    </div>
+    <div class="field">
+      <label for="requiredExp">Required experience (years)</label>
+      <input type="number" id="requiredExp" min="0" step="0.5" placeholder="e.g. 2">
+    </div>
+
+    <div class="section-title">Candidate</div>
+    <div class="grid2">
+      <div class="field">
+        <label for="candidateName">Candidate name</label>
+        <input type="text" id="candidateName" placeholder="e.g. Riya Sharma" required>
+      </div>
+      <div class="field">
+        <label for="candidateExp">Candidate experience (years)</label>
+        <input type="number" id="candidateExp" min="0" step="0.5" placeholder="e.g. 1">
+      </div>
+    </div>
+    <div class="field">
+      <label for="candidateSkills">Candidate skills</label>
+      <input type="text" id="candidateSkills" placeholder="e.g. Python, Git, React" required>
+      <div class="hint">Comma-separated. Pulled from a resume or self-reported profile.</div>
+    </div>
+
+    <div class="actions">
+      <button type="submit" class="btn">Score this candidate</button>
+    </div>
+  </form>
+</div>
+
+<script src="script.js"></script>
+<script>
+document.getElementById("fitForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const data = {
+    jobTitle: document.getElementById("jobTitle").value,
+    requiredSkills: document.getElementById("requiredSkills").value,
+    requiredExp: document.getElementById("requiredExp").value,
+    candidateName: document.getElementById("candidateName").value,
+    candidateExp: document.getElementById("candidateExp").value,
+    candidateSkills: document.getElementById("candidateSkills").value
+  };
+  saveSession(data);
+  window.location.href = "results.html";
+});
+</script>
+</body>
+</html>
